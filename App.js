@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import Citas from './component/Citas';
+import Formulario from './component/Formulario';
 
  const App = () => {
 
@@ -11,6 +12,7 @@ import Citas from './component/Citas';
     {id:3, paciente: "Context",    propietario:'Leo03', sintomas: "No Canta"  }, 
     {id:4, paciente: "StyleSheet", propietario:'Leo04', sintomas: "No camina" }, 
   ]); 
+
 
  /*Notas Importantes */
  // Los Flat List tienen propiedades de que permiten manupular los datos de un objeto e iterarlo
@@ -29,8 +31,9 @@ const eliminaPaciente = id =>{
     <View style={styles.contenedor}>
       <Text style={styles.titulo}>Administrador de Citas</Text>
 
-      <Text style={styles.titulo}>  {citas.length > 0 ? 'Administra tus Citas': 'Disculpe, No Tines Citas'}  </Text>
+      <Formulario />
 
+      <Text style={styles.titulo}>  {citas.length > 0 ? 'Administra tus Citas': 'Disculpe, No Tines Citas'}  </Text>
       
       <FlatList
         data={citas}
@@ -53,6 +56,7 @@ const styles = StyleSheet.create({
     fontSize:24, 
     fontWeight:'bold', 
     textAlign:'center',
+    marginBottom:20,
 
   }
 })

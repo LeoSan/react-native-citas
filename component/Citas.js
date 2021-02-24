@@ -9,7 +9,7 @@ import { View, Text, StyleSheet, Button, TouchableHighlight } from 'react-native
 // rnfc
 const Citas = ({item, eliminaPaciente}) => {
 
-const dialogoEliminar = ( id )=>{
+const dialogoEliminar =  id =>{
     console.log("Eliminar ...", id);
     //Llamamos la funcion ya que lo enviamos via props
     eliminaPaciente(id);
