@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
+import Citas from './component/Citas';
 
  const App = () => {
 
@@ -16,19 +17,25 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
  //Data -> Puedes pasar un objeto 
  //renderItem -> funciona como un for, map, foreach pero para poder acceder a el debemos usar la propiedad item ejemplo citas.item.nombre 
   
+
+//Elimina los pacientes del state 
+const eliminaPaciente = id =>{
+  setCitas( (citasActuales) => {
+    return citasActuales.filter(cita => cita.id !== id ); 
+  })
+}
+
   return (
     <View style={styles.contenedor}>
       <Text style={styles.titulo}>Administrador de Citas</Text>
+
+      <Text style={styles.titulo}>  {citas.length > 0 ? 'Administra tus Citas': 'Disculpe, No Tines Citas'}  </Text>
 
       
       <FlatList
         data={citas}
         keyExtractor={cita => cita.id}
-        renderItem = { (cita) => (
-            <View > 
-            <Text> {cita.item.paciente}</Text>
-            </View> 
-        )}
+        renderItem = { ({item}) => <Citas item={item}  eliminaPaciente={eliminaPaciente} />}
       />
     </View>
   );
@@ -37,7 +44,7 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 const styles = StyleSheet.create({
   contenedor:{
-    backgroundColor:'#AA076b',
+    backgroundColor:'#134484',
     flex:1
   }, 
   titulo:{
