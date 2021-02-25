@@ -1,6 +1,7 @@
 import React, {Fragment, useState} from 'react'
-import {Text, StyleSheet, View, TextInput, Button} from 'react-native';
+import {Text, StyleSheet, View, TextInput, Button, Alert, ScrollView, TouchableHighlight, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import shortid from 'shortid'; 
 
 
 /**
@@ -8,10 +9,20 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 * @function @Formulario
 **/
 
-const Formulario = (props) => {
+const Formulario = ({citas, setCitas, guardarmostrarForm}) => {
 
-        const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+        const [paciente,    guardarPaciente] = useState(''); 
+        const [propietario, guardarPropietario] = useState(''); 
+        const [telefono,    guardarTelefono] = useState(''); 
+        const [sintomas,    guardarsintomas] = useState(''); 
+    
+        const [fecha, guardarFecha] = useState(''); 
+        const [hora,  guardarHora]  = useState('');
+
+        const [isDatePickerVisible, setDatePickerVisibility] = useState(false);        
+        const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
       
+       //Como hacer el pick de Fecha 
         const showDatePicker = () => {
           setDatePickerVisibility(true);
         };
@@ -21,67 +32,155 @@ const Formulario = (props) => {
         };
       
         const handleConfirm = (date) => {
-          console.warn("Agenda tu Cita: ", date);
-          hideDatePicker();
+            const opciones ={year:'numeric', month:'long', day:"2-digit"}
+            //Formatear fecha 
+            console.log(date.toLocaleDateString('es-ES', opciones ));
+            guardarFecha(date.toLocaleDateString('es-ES', opciones ));
+            hideDatePicker();
         };
 
+        //Como hacer el pick de Tiempo 
+
+    // Muestra u oculta el Time Picker
+    const showTimePicker = () => {
+        setTimePickerVisibility(true);
+    };
+
+    const hideTimePicker = () => {
+        setTimePickerVisibility(false);
+    };
+
+    const confirmarHora = hora => {
+        const opciones = { hour: 'numeric', minute: '2-digit', hour12: false};
+        guardarHora(hora.toLocaleString('es-UN', opciones));
+        console.log(hora);
+        hideTimePicker();
+    };         
+
+
+//Evento submit 
+const eventoSubmit = ()=>{
+    console.log("submit");
+
+    if(paciente.trim() === '' || propietario.trim() === '' || telefono.trim() === '' || fecha.trim() === ''  || hora.trim() === '' || sintomas.trim() === '' ){
+        //Falla 
+        console.log("Algo Fallo");
+        muestraAlerta();
+    }
+
+    const cita = {paciente, propietario, telefono, fecha, hora, sintomas }; 
+    cita.id = shortid.generate();
+
+    //Agregar al usestate 
+    const citasNuevas = [...citas, cita]
+    setCitas(citasNuevas);
+
+    //Ocultar el Formulario y resetear formulario 
+    guardarmostrarForm(false);
+    
+}      
+
+//Mostrar Alerta 
+const muestraAlerta =()=>{
+
+    Alert.alert(
+        'Error', //titulo
+        'Todos los campos son obligatorios', //Mensaje
+        [{
+            text:'OK'//Arreglo de boton  
+        }]
+    )
+
+}
+
+const cerrarTeclado =()=>{
+
+    Keyboard.dismiss();
+
+}
 
   return (
+    
     <Fragment>
-        <View>
-        <View style={styles.formulario}>
-            <Text style={styles.label}>Paciente: </Text>
-            <TextInput 
-                style={styles.input}
-                onChangeText={ (texto) => console.log(texto) }
-                keyboardType = 'default'
-            
-            />
-        </View>
+        <TouchableWithoutFeedback onPress={()=>cerrarTeclado()}>
+            <ScrollView style={styles.scrollView}>        
 
-        <View style={styles.formulario}>
-            <Text style={styles.label}>Propietario: </Text>
-            <TextInput 
-                style={styles.input}
-                onChangeText={ (texto) => console.log(texto) }
-                keyboardType = 'default'
-            
-            />
-        </View>
+                    <View>
+                        <View style={styles.formulario}>
+                            <Text style={styles.label}>Paciente: </Text>
+                            <TextInput 
+                                style={styles.input}
+                                onChangeText={ (texto) => guardarPaciente(texto) }
+                                keyboardType = 'default'
+                            
+                            />
+                        </View>
 
-        <View style={styles.formulario}>
-            <Text style={styles.label}>Telefono: </Text>
-            <TextInput 
-                style={styles.input}
-                onChangeText={ (texto) => console.log(texto) }
-                keyboardType = 'numeric'
-            
-            />
-        </View>  
-        
-        <View style={styles.formulario}>
-            <Text style={styles.label}>Sintomas: </Text>
-            <TextInput 
-                multiline
-                style={styles.input}
-                onChangeText={ (texto) => console.log(texto) }
-                
-            
-            />
-        </View>  
+                        <View style={styles.formulario}>
+                            <Text style={styles.label}>Propietario: </Text>
+                            <TextInput 
+                                style={styles.input}
+                                onChangeText={ (texto) => guardarPropietario(texto) }
+                                keyboardType = 'default'
+                            
+                            />
+                        </View>
 
-        <View>
-            <Button title="Agenda Tu Cita" onPress={showDatePicker} />
-            <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-            />
-        </View>
-            
+                        <View style={styles.formulario}>
+                            <Text style={styles.label}>Telefono: </Text>
+                            <TextInput 
+                                style={styles.input}
+                                onChangeText={ (texto) => guardarTelefono(texto) }
+                                keyboardType = 'numeric'
+                            
+                            />
+                        </View>  
+                        
+                        <View style={styles.formulario}>
+                            <Text style={styles.label}>Sintomas: </Text>
+                            <TextInput 
+                                multiline
+                                style={styles.input}
+                                onChangeText={ (texto) => guardarsintomas(texto) }
+                                
+                            
+                            />
+                        </View>  
 
-        </View>
+                        <View>
+                            <Button title="Agenda Tu Fecha" onPress={showDatePicker} />
+                            <DateTimePickerModal
+                                isVisible={isDatePickerVisible}
+                                mode="date"
+                                onConfirm={handleConfirm}
+                                onCancel={hideDatePicker}
+                                locale='es_ES'
+                            />
+
+                        <Text >{fecha}: </Text>
+                        </View>        
+                        <View>
+                            <Button title="Seleccionar Hora" onPress={showTimePicker} />
+                            <DateTimePickerModal
+                                isVisible={isTimePickerVisible}
+                                mode="time"
+                                onConfirm={confirmarHora}
+                                onCancel={hideTimePicker}
+                                locale='es_ES'
+
+                            />
+                            <Text>{hora}: </Text>
+                        </View>
+                        <View>
+                            <TouchableHighlight style={styles.btnSubmit} onPress={ () => eventoSubmit() }>
+                                    <Text style={styles.TextoSubmit}> Guardar &times;</Text>
+                            </TouchableHighlight>
+                        </View>                        
+                            
+                    </View>
+
+            </ScrollView>
+        </TouchableWithoutFeedback>
     </Fragment>
     )
   }
@@ -109,11 +208,27 @@ const Formulario = (props) => {
         paddingHorizontal:10, 
         //paddingVertical:10, 
         backgroundColor:'#969faf', 
-        marginHorizontal:5
-
         
+    }, 
+    container: {
+        flex: 1,
+        paddingTop: 10,
+      },
+    scrollView: {
+        backgroundColor:'#969faf', 
+        marginHorizontal: 20,
+      },
+      btnSubmit:{
+        padding:10, 
+        backgroundColor:'#4630eb',
+        marginVertical:10, 
 
-    }
+    },      
+    TextoSubmit:{
+        color:'#FFF',
+        fontWeight:'bold', 
+        textAlign:'center',
+    }    
 
   });
 

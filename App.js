@@ -1,9 +1,15 @@
 import React, {useState} from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableHighlight, Platform } from 'react-native';
 import Citas from './component/Citas';
 import Formulario from './component/Formulario';
 
  const App = () => {
+
+
+  const [mostrarForm, guardarmostrarForm] = useState(false);
+  const [nomBoton,    guardarnomBoton] = useState('Crear Cita');
+
+
 
   //definir el state
   const [citas, setCitas] = useState([
@@ -25,21 +31,47 @@ const eliminaPaciente = id =>{
   setCitas( (citasActuales) => {
     return citasActuales.filter(cita => cita.id !== id ); 
   })
+
+}
+
+//Mostrar o Ocultar Formulario
+const mostrarFormulario = () =>{
+  guardarmostrarForm(!mostrarForm);
+  if (nomBoton === 'Crear Cita') guardarnomBoton('Ver Citas');
+  if (nomBoton === 'Ver Citas') guardarnomBoton('Crear Cita');
+
 }
 
   return (
     <View style={styles.contenedor}>
-      <Text style={styles.titulo}>Administrador de Citas</Text>
+      <Text style={styles.titulo}>Genera Tu Cita</Text>
 
-      <Formulario />
+            <View>
+                <TouchableHighlight style={styles.btnMostrarForm} onPress={ () => mostrarFormulario() }>
+                    <Text style={styles.TextoForm}> {nomBoton}  &times;</Text>
+                </TouchableHighlight>
+            </View>
 
-      <Text style={styles.titulo}>  {citas.length > 0 ? 'Administra tus Citas': 'Disculpe, No Tines Citas'}  </Text>
-      
-      <FlatList
-        data={citas}
-        keyExtractor={cita => cita.id}
-        renderItem = { ({item}) => <Citas item={item}  eliminaPaciente={eliminaPaciente} />}
-      />
+          
+          {mostrarForm ? (
+            <Formulario 
+              citas={citas}
+              setCitas={setCitas} 
+              guardarmostrarForm = {guardarmostrarForm}/>
+          ):(
+            <>
+            <Text style={styles.titulo}>  {citas.length > 0 ? 'Administra tus Citas': 'Disculpe, No Tines Citas'}  </Text>
+          
+            <FlatList 
+              
+              data={citas}
+              keyExtractor={cita => cita.id}
+              renderItem = { ({item}) => <Citas item={item}  eliminaPaciente={eliminaPaciente} />}
+            />
+            </>
+          )}
+
+
     </View>
   );
 }
@@ -52,13 +84,35 @@ const styles = StyleSheet.create({
   }, 
   titulo:{
     color:'#FFF',
-    marginTop:40, 
+    marginTop: Platform.OS === 'ios' ? 40 : 30, 
     fontSize:24, 
     fontWeight:'bold', 
     textAlign:'center',
     marginBottom:20,
 
-  }
+  }, 
+  conenido:{
+    flex:1, 
+    marginHorizontal:'2.5%',
+  }, 
+  listado:{
+    flex:1, //Tome todo el contenido del telefono
+  },
+  btnMostrarForm:{
+    padding:10, 
+    backgroundColor:'#4630eb',
+    marginVertical:10, 
+
+},
+TextoForm:{
+    color:'#FFF',
+    fontWeight:'bold', 
+    textAlign:'center',
+
+}  
+  
+
+  
 })
 
 export default App;
